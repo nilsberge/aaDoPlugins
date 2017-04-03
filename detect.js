@@ -1,30 +1,27 @@
-window.scode_doPlugins = window.scode_doPlugins || [];
-window.scode_doPlugins.push(function (s) {
+function doPluginsType(sObj) {
     'use strict';
-    window.console.log('s', s);
-    window.console.log('s.eo', s.eo);
-    window.console.log('s.lnk', s.lnk);
-    window.console.log('s.linkObject', s.linkObject);
-    window.console.log('s.linkURL', s.linkURL);
-    window.console.log('s.linkType', s.linkType);
-    window.console.log('s.linkName', s.linkName);
-    window.console.log('s.clickObject', s.clickObject);
-
     var doPluginsLink;
     var doPluginsPage;
     var doPluginsUnspecified;
+    var doPluginsMedia;
+    var sObject = sObj || window.s;
 
     if (window.AppMeasurement) {
-        doPluginsLink = s.linkType;
-        doPluginsPage = !s.linkType && !s.clickObject;
-        doPluginsUnspecified = (!s.linkType) && s.clickObject;
+        doPluginsLink = sObject.linkType;
+        doPluginsMedia = (/^m.*_.*/).test(sObject.pe);
+        doPluginsPage = !sObject.linkType && !sObject.clickObject && !doPluginsMedia;
+        doPluginsUnspecified = (!sObject.linkType) && sObject.clickObject;
     } else {
-        doPluginsUnspecified = s.eo;
-        doPluginsLink = s.lnk && !doPluginsUnspecified;
-        doPluginsPage = !doPluginsUnspecified && !doPluginsLink;
+        doPluginsUnspecified = sObject.eo;
+        doPluginsLink = sObject.lnk && !doPluginsUnspecified;
+        doPluginsMedia = (/^m.*_.*/).test(sObject.pe);
+        doPluginsPage = !doPluginsUnspecified && !doPluginsLink && !doPluginsMedia;
     }
 
-    window.console.log('doPluginsLink', !!doPluginsLink);
-    window.console.log('doPluginsPage', !!doPluginsPage);
-    window.console.log('doPluginsUnspecified', !!doPluginsUnspecified);
-});
+    return {
+        link: !!doPluginsLink,
+        page: !!doPluginsPage,
+        media: doPluginsMedia,
+        unspecified: !!doPluginsUnspecified
+    };
+}
